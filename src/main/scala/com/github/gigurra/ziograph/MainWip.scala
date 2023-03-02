@@ -17,21 +17,22 @@ object MainWip extends ZIOAppDefault:
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
 
+  // Imagine this function living inside libX.jar
   type SomeAge = Positive DescribedAs "Age should be positive"
+  def foo(
+      x: Int :| (Greater[0] & SomeAge)
+  ): Unit = ???
 
+  // Imagine this living inside libY.jar
   final class Boogoo[V]
   inline given [V <: Int]: Constraint[Int, Boogoo[V]] with
     override inline def test(value: Int): Boolean = value + 1 > constValue[V]
     override inline def message: String           = "Should be greater than " + stringValue[V]
-
-  def foo(
-      x: Int :| (Greater[0] & Less[12])
-  ): Unit = ???
-
   def bar(
-      x: Int :| (Boogoo[1] & SomeAge)
+      x: Int :| (Boogoo[1] & Less[12])
   ): Unit = ???
 
+  // Imagine this function living inside your own project
   def foobar(
       x: Int :| (Greater[0] & Less[12] & Boogoo[1] & SomeAge)
   ): Unit =
