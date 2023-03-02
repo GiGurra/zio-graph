@@ -10,7 +10,7 @@ case class UserService( /* userRepo: UserRepo */ ):
 
   def handleNewUser(id: String): UIO[Unit] =
     topic1
-      .orderedOn(orderKey = id)
+      .ordered(on = id)
       .enqueue(
         CreateUser(id),
         ActivateUser(id, 1),

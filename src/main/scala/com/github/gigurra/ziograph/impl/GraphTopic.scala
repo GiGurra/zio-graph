@@ -11,7 +11,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class GraphTopic[A <: Node: JsonEncoder: JsonDecoder](val id: String):
 
-  def orderedOn(orderKey: String): impl.GraphTopic[A] =
+  def ordered(on: String): impl.GraphTopic[A] =
     val self = this
     new impl.GraphTopic[A](id):
       override def enqueue(a: A*): UIO[Unit] =
