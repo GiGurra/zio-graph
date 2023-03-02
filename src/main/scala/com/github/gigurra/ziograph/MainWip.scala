@@ -39,6 +39,9 @@ object MainWip extends ZIOAppDefault:
     foo(x)
     bar(x)
 
+  foobar(2)
+  // foobar(12) // not < 12, so does not compile
+
   override def run: ZIO[Any, Any, Any] =
     (for {
       _           <- ZIO.logInfo(s"Starting experiment...")
