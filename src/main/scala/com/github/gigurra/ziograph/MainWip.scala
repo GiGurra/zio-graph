@@ -27,9 +27,11 @@ object MainWip extends ZIOAppDefault:
 
   // Imagine this living inside libY.jar
   final class Boogoo[V]
-  inline given BoogooInt[V <: Int]: Constraint[Int, Boogoo[V]] with
-    override inline def test(value: Int): Boolean = value + 1 > constValue[V]
-    override inline def message: String           = "Should be greater than " + stringValue[V]
+  trait BoogooConstraintBase[V]:
+    inline protected def cv: V = constValue[V]
+    inline def message: String = "Should be greater than " + stringValue[V]
+  given Constraint[Int, Boogoo[Int]] with BoogooConstraintBase[Int] with
+    override inline def test(value: Int): Boolean = value + 1 > cv
   def bar(
       x: Int :| (Boogoo[1] & Less[12])
   ): Unit = ???
@@ -58,6 +60,7 @@ object MainWip extends ZIOAppDefault:
     foo2(z.refineFurther[Greater[-2]])
 
     // foobar(12) // not < 12, so does not compile
+
   extension [Src](value: Src)
     inline def refineZIO[C](using inline constraint: Constraint[Src, C]): IO[String, Src :| C] =
       value.refineValidation[C].toZIO
