@@ -3,6 +3,7 @@ package com.github.gigurra.ziograph
 import com.github.gigurra.ziograph.impl.{GraphTopic, Node}
 import zio.json.{DeriveJsonDecoder, DeriveJsonEncoder, JsonDecoder, JsonEncoder}
 import zio.{UIO, ZIO}
+import zio.ZLayer
 
 case class UserService( /* userRepo: UserRepo */ ):
 
@@ -38,3 +39,6 @@ case class UserService( /* userRepo: UserRepo */ ):
       given JsonDecoder[UserOp] = DeriveJsonDecoder.gen[UserOp]
       given JsonEncoder[UserOp] = DeriveJsonEncoder.gen[UserOp]
   }
+
+object UserService:
+  val live = ZLayer.fromFunction(UserService.apply _)
