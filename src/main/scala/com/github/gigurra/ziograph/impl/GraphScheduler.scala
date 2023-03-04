@@ -3,12 +3,14 @@ package com.github.gigurra.ziograph.impl
 import zio.Task
 import zio.json.JsonEncoder
 import zio.json.JsonDecoder
+import com.github.gigurra.ziograph.impl.GraphScheduler.NodeHandler
 
 class GraphScheduler( /*graphRepo*/ ):
 
-  def registerHandler[A <: Node: JsonEncoder: JsonDecoder](
-      topicName: String
-  ): Task[GraphTopic[A]] =
+  def setHandler(
+      topicName: String,
+      handler: NodeHandler[_]
+  ): Task[Unit] =
     ???
 
 object GraphScheduler:
@@ -20,6 +22,6 @@ object GraphScheduler:
 
   case class ScheduledNode[A <: Node: JsonEncoder: JsonDecoder]()
 
-  trait TaskHandler[A <: Node: JsonEncoder: JsonDecoder] {
-    def handle(task: ScheduledNode[A]): Task[ExecutionResult]
+  trait NodeHandler[N <: ScheduledNode[_]] {
+    def handle(node: N): Task[ExecutionResult]
   }

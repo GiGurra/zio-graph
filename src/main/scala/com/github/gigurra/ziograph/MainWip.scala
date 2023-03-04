@@ -18,6 +18,8 @@ object MainWip extends ZIOAppDefault:
 
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
     Runtime.removeDefaultLoggers >>> console(LogFormat.colored)
+
+
   override def run: ZIO[Any, Throwable, Any] =
     (for {
       _           <- ZIO.logInfo(s"Starting experiment...")
