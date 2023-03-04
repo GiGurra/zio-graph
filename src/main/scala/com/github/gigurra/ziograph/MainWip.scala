@@ -27,7 +27,7 @@ object MainWip extends ZIOAppDefault:
 
   // Imagine this living inside libY.jar
   final class Boogoo[V]
-  inline given [V <: Int]: Constraint[Int, Boogoo[V]] with
+  inline given BoogooInt[V <: Int]: Constraint[Int, Boogoo[V]] with
     override inline def test(value: Int): Boolean = value + 1 > constValue[V]
     override inline def message: String           = "Should be greater than " + stringValue[V]
   def bar(
@@ -53,6 +53,8 @@ object MainWip extends ZIOAppDefault:
     foo(z)
     bar(z)
     foo2(z.refine)
+    foo2(z.refine)
+    foo2((z: Int).refine)
     foo2(z.refineFurther[Greater[-2]])
 
     // foobar(12) // not < 12, so does not compile
@@ -61,14 +63,15 @@ object MainWip extends ZIOAppDefault:
       value.refineValidation[C].toZIO
 
   extension [Src, Cstr](value: Src :| Cstr)
+    private inline def sourceValue: Src = value
     inline def refineFurtherZIO[C](using inline constraint: Constraint[Src, C]): IO[String, Src :| (Cstr & C)] =
-      (value: Src).refineZIO[C].map(_.asInstanceOf[Src :| (Cstr & C)])
+      sourceValue.refineZIO[C].map(_.asInstanceOf[Src :| (Cstr & C)])
     inline def refineFurtherEither[C](using inline constraint: Constraint[Src, C]): Either[String, Src :| (Cstr & C)] =
-      (value: Src).refineEither[C].map(_.asInstanceOf[Src :| (Cstr & C)])
+      sourceValue.refineEither[C].map(_.asInstanceOf[Src :| (Cstr & C)])
     inline def refineFurtherOption[C](using inline constraint: Constraint[Src, C]): Option[Src :| (Cstr & C)] =
-      (value: Src).refineOption[C].map(_.asInstanceOf[Src :| (Cstr & C)])
+      sourceValue.refineOption[C].map(_.asInstanceOf[Src :| (Cstr & C)])
     inline def refineFurther[C](using inline constraint: Constraint[Src, C]): Src :| (Cstr & C) =
-      (value: Src).refine[C].asInstanceOf[Src :| (Cstr & C)]
+      sourceValue.refine[C].asInstanceOf[Src :| (Cstr & C)]
 
   override def run: ZIO[Any, Throwable, Any] =
     (for {
